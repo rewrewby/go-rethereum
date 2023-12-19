@@ -25,24 +25,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/console/prompt"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/internal/flags"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/node"
+	"github.com/rethereum-blockchain/go-rethereum/accounts"
+	"github.com/rethereum-blockchain/go-rethereum/accounts/keystore"
+	"github.com/rethereum-blockchain/go-rethereum/cmd/utils"
+	"github.com/rethereum-blockchain/go-rethereum/common"
+	"github.com/rethereum-blockchain/go-rethereum/console/prompt"
+	"github.com/rethereum-blockchain/go-rethereum/eth"
+	"github.com/rethereum-blockchain/go-rethereum/eth/downloader"
+	"github.com/rethereum-blockchain/go-rethereum/ethclient"
+	"github.com/rethereum-blockchain/go-rethereum/internal/debug"
+	"github.com/rethereum-blockchain/go-rethereum/internal/ethapi"
+	"github.com/rethereum-blockchain/go-rethereum/internal/flags"
+	"github.com/rethereum-blockchain/go-rethereum/log"
+	"github.com/rethereum-blockchain/go-rethereum/metrics"
+	"github.com/rethereum-blockchain/go-rethereum/node"
 
 	// Force-load the tracer engines to trigger registration
-	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
-	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
+	_ "github.com/rethereum-blockchain/go-rethereum/eth/tracers/js"
+	_ "github.com/rethereum-blockchain/go-rethereum/eth/tracers/native"
 
 	"github.com/urfave/cli/v2"
 )
@@ -279,8 +279,8 @@ func prepare(ctx *cli.Context) {
 	case ctx.IsSet(utils.GoerliFlag.Name):
 		log.Info("Starting Geth on Görli testnet...")
 
-	case ctx.IsSet(utils.SepoliaFlag.Name):
-		log.Info("Starting Geth on Sepolia testnet...")
+	case ctx.IsSet(utils.KrontosFlag.Name):
+		log.Info("Starting Geth on Krontos testnet...")
 
 	case ctx.IsSet(utils.DeveloperFlag.Name):
 		log.Info("Starting Geth in ephemeral dev mode...")
@@ -306,7 +306,7 @@ func prepare(ctx *cli.Context) {
 	// If we're a full node on mainnet without --cache specified, bump default cache allowance
 	if ctx.String(utils.SyncModeFlag.Name) != "light" && !ctx.IsSet(utils.CacheFlag.Name) && !ctx.IsSet(utils.NetworkIdFlag.Name) {
 		// Make sure we're not on any supported preconfigured testnet either
-		if !ctx.IsSet(utils.SepoliaFlag.Name) &&
+		if !ctx.IsSet(utils.KrontosFlag.Name) &&
 			!ctx.IsSet(utils.RinkebyFlag.Name) &&
 			!ctx.IsSet(utils.GoerliFlag.Name) &&
 			!ctx.IsSet(utils.DeveloperFlag.Name) {

@@ -28,12 +28,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/internal/testlog"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p/discover/v5wire"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/p2p/enr"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/rethereum-blockchain/go-rethereum/internal/testlog"
+	"github.com/rethereum-blockchain/go-rethereum/log"
+	"github.com/rethereum-blockchain/go-rethereum/p2p/discover/v5wire"
+	"github.com/rethereum-blockchain/go-rethereum/p2p/enode"
+	"github.com/rethereum-blockchain/go-rethereum/p2p/enr"
+	"github.com/rethereum-blockchain/go-rethereum/rlp"
 	"github.com/stretchr/testify/require"
 )
 
@@ -186,7 +186,7 @@ func TestUDPv5_findnodeHandling(t *testing.T) {
 
 	// This request gets all the distance-253 nodes.
 	test.packetIn(&v5wire.Findnode{ReqID: []byte{4}, Distances: []uint{253}})
-	test.expectNodes([]byte{4}, 1, nodes253)
+	test.expectNodes([]byte{4}, 2, nodes253)
 
 	// This request gets all the distance-249 nodes and some more at 248 because
 	// the bucket at 249 is not full.
@@ -510,6 +510,27 @@ func TestUDPv5_talkRequest(t *testing.T) {
 		test.packetInFrom(test.remotekey, test.remoteaddr, &v5wire.TalkResponse{
 			ReqID:   p.ReqID,
 			Message: []byte("test response"),
+		})
+	})
+	if err := <-done; err != nil {
+		t.Fatal(err)
+	}
+
+	// Also check requesting without ENR.
+	go func() {
+		_, err := test.udp.TalkRequestToID(remote.ID(), test.remoteaddr, "test", []byte("test request 2"))
+		done <- err
+	}()
+	test.waitPacketOut(func(p *v5wire.TalkRequest, addr *net.UDPAddr, _ v5wire.Nonce) {
+		if p.Protocol != "test" {
+			t.Errorf("wrong protocol ID in talk request: %q", p.Protocol)
+		}
+		if string(p.Message) != "test request 2" {
+			t.Errorf("wrong message talk request: %q", p.Message)
+		}
+		test.packetInFrom(test.remotekey, test.remoteaddr, &v5wire.TalkResponse{
+			ReqID:   p.ReqID,
+			Message: []byte("test response 2"),
 		})
 	})
 	if err := <-done; err != nil {

@@ -20,20 +20,21 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/rethereum-blockchain/go-rethereum/consensus/misc/eip1559"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 	"runtime"
 	"time"
 
 	mapset "github.com/deckarep/golang-set/v2"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/misc"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/rethereum-blockchain/go-rethereum/common"
+	"github.com/rethereum-blockchain/go-rethereum/consensus"
+	"github.com/rethereum-blockchain/go-rethereum/consensus/misc"
+	"github.com/rethereum-blockchain/go-rethereum/core/state"
+	"github.com/rethereum-blockchain/go-rethereum/core/types"
+	"github.com/rethereum-blockchain/go-rethereum/params"
+	"github.com/rethereum-blockchain/go-rethereum/rlp"
+	"github.com/rethereum-blockchain/go-rethereum/trie"
 )
 
 // Ethash proof-of-work protocol constants.
@@ -289,19 +290,13 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		if err := misc.VerifyGaslimit(parent.GasLimit, header.GasLimit); err != nil {
 			return err
 		}
-	} else if err := misc.VerifyEip1559Header(chain.Config(), parent, header); err != nil {
+	} else if err := eip1559.VerifyEip1559Header(chain.Config(), parent, header); err != nil {
 		// Verify the header's EIP-1559 attributes.
 		return err
 	}
 	// Verify that the block number is parent's +1
 	if diff := new(big.Int).Sub(header.Number, parent.Number); diff.Cmp(big.NewInt(1)) != 0 {
 		return consensus.ErrInvalidNumber
-	}
-	if chain.Config().IsShanghai(header.Time) {
-		return fmt.Errorf("ethash does not support shanghai fork")
-	}
-	if chain.Config().IsCancun(header.Time) {
-		return fmt.Errorf("ethash does not support cancun fork")
 	}
 	// Verify the engine specific seal securing the block
 	if seal {
@@ -630,12 +625,12 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 
 	if len(uncles) == 0 { // If no uncles, the miner gets the entire block fee.
 		minerReward.Add(minerReward, blockFeeReward)
-	} else if config.IsBerlin(header.Number) { // During Berlin block, each miner and uncles are rewarded the block fee.
-		uncleReward.Add(uncleReward, blockFeeReward)
-		minerReward.Add(minerReward, blockFeeReward)
 	} else if config.IsLondon(header.Number) { // After london block, miners and uncles are rewarded the block fee divided between them.
 		uncleCount.Add(uncleCount, big1) // Add 1 to uncleCount to account for the miner in the division.
 		blockFeeReward.Div(blockFeeReward, uncleCount)
+		uncleReward.Add(uncleReward, blockFeeReward)
+		minerReward.Add(minerReward, blockFeeReward)
+	} else if config.IsBerlin(header.Number) { // During Berlin block, each miner and uncles are rewarded the block fee.
 		uncleReward.Add(uncleReward, blockFeeReward)
 		minerReward.Add(minerReward, blockFeeReward)
 	} else if config.IsHomestead(header.Number) { // Until Berlin block, Miners and Uncles are rewarded for the amount of uncles generated.

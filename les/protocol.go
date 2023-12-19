@@ -23,12 +23,12 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	vfc "github.com/ethereum/go-ethereum/les/vflux/client"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/rethereum-blockchain/go-rethereum/common"
+	"github.com/rethereum-blockchain/go-rethereum/core/types"
+	"github.com/rethereum-blockchain/go-rethereum/crypto"
+	vfc "github.com/rethereum-blockchain/go-rethereum/les/vflux/client"
+	"github.com/rethereum-blockchain/go-rethereum/p2p/enode"
+	"github.com/rethereum-blockchain/go-rethereum/rlp"
 )
 
 // Constants to match up protocol versions and messages
@@ -49,7 +49,7 @@ var (
 var ProtocolLengths = map[uint]uint64{lpv2: 22, lpv3: 24, lpv4: 24}
 
 const (
-	NetworkId          = 1
+	NetworkId          = 622277
 	ProtocolMaxMsgSize = 10 * 1024 * 1024 // Maximum cap on the size of a protocol message
 	blockSafetyMargin  = 4                // safety margin applied to block ranges specified relative to head block
 

@@ -21,10 +21,10 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/bloombits"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/rethereum-blockchain/go-rethereum/common"
+	"github.com/rethereum-blockchain/go-rethereum/core/bloombits"
+	"github.com/rethereum-blockchain/go-rethereum/core/types"
+	"github.com/rethereum-blockchain/go-rethereum/rpc"
 )
 
 // Filter can be used to retrieve and filter logs.
@@ -296,6 +296,9 @@ func (f *Filter) checkMatches(ctx context.Context, header *types.Header) ([]*typ
 // pendingLogs returns the logs matching the filter criteria within the pending block.
 func (f *Filter) pendingLogs() ([]*types.Log, error) {
 	block, receipts := f.sys.backend.PendingBlockAndReceipts()
+	if block == nil {
+		return nil, errors.New("pending state not available")
+	}
 	if bloomFilter(block.Bloom(), f.addresses, f.topics) {
 		var unfiltered []*types.Log
 		for _, r := range receipts {

@@ -21,9 +21,9 @@ import (
 	"math"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/rethereum-blockchain/go-rethereum/common"
+	"github.com/rethereum-blockchain/go-rethereum/params"
+	"github.com/rethereum-blockchain/go-rethereum/rlp"
 )
 
 // TestCreation tests that different genesis and fork rule combinations result in
@@ -115,10 +115,10 @@ func TestCreation(t *testing.T) {
 				{6500000, 2678832736, ID{Hash: checksumToBytes(0xf9843abf), Next: 0}},          // Future Shanghai block
 			},
 		},
-		// Sepolia test cases
+		// Krontos test cases
 		{
-			params.SepoliaChainConfig,
-			params.SepoliaGenesisHash,
+			params.KrontosChainConfig,
+			params.KrontosGenesisHash,
 			[]testcase{
 				{0, 0, ID{Hash: checksumToBytes(0xfe3366e7), Next: 1735371}},                   // Unsynced, last Frontier, Homestead, Tangerine, Spurious, Byzantium, Constantinople, Petersburg, Istanbul, Berlin and first London block
 				{1735370, 0, ID{Hash: checksumToBytes(0xfe3366e7), Next: 1735371}},             // Last London block

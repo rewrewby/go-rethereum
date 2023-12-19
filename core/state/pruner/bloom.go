@@ -21,10 +21,10 @@ import (
 	"errors"
 	"os"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/log"
 	bloomfilter "github.com/holiman/bloomfilter/v2"
+	"github.com/rethereum-blockchain/go-rethereum/common"
+	"github.com/rethereum-blockchain/go-rethereum/core/rawdb"
+	"github.com/rethereum-blockchain/go-rethereum/log"
 )
 
 // stateBloomHasher is a wrapper around a byte blob to satisfy the interface API
@@ -127,6 +127,6 @@ func (bloom *stateBloom) Delete(key []byte) error { panic("not supported") }
 // reports whether the key is contained.
 // - If it says yes, the key may be contained
 // - If it says no, the key is definitely not contained.
-func (bloom *stateBloom) Contain(key []byte) (bool, error) {
-	return bloom.bloom.Contains(stateBloomHasher(key)), nil
+func (bloom *stateBloom) Contain(key []byte) bool {
+	return bloom.bloom.Contains(stateBloomHasher(key))
 }
